@@ -14,17 +14,16 @@ curl -vvv -X POST -d '{"message":"hi there from a cellular network!"}' localhost
 ```yaml
 version: '3.2'
 services:
-    thermostat_api_server:
+    gsm_message_relay:
         container_name: gsm_message_relay
         image: ghcr.io/aneisch/gsm_message_relay:latest
         ports:
-            - '8080:8080'
+            - '9999:9999'
         environment:
-            # Name for Device in HA
             # Optional GSM_MODEM - defaults to /dev/gsm_modem
             #- GSM_MODEM=/dev/gsm_modem
             # SIM key from Hologram Device dashboard
-            - SIM_KEY=10.0.1.22 
+            - SIM_KEY=XXXX
         restart: always
 ```
 ### Home Assistant Configuration
