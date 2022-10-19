@@ -15,8 +15,6 @@ import ast
 modem_path = os.environ['MODEM_PATH']
 sim_key = os.environ['SIM_KEY']
 
-print(os.environ)
-
 # Allow faster script restart
 socketserver.TCPServer.allow_reuse_address = True
 
