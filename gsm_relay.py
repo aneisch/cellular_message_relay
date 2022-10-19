@@ -21,12 +21,13 @@ socketserver.TCPServer.allow_reuse_address = True
 
 def gsm_send(message):
     attempts = 0
+    max_attempts = 7
     success = False
 
-    while attempts < 5:
+    while attempts < max_attempts:
             os.system("killall screen 2> /dev/null; screen -wipe 2> /dev/null")
             attempts += 1
-            print(f"Attempting to send message: {message} {attempts}/5")
+            print(f"Attempting to send message: {message} {attempts}/{max_attempts}")
 
             try:
                 child = pexpect.spawn(f"screen -S gsm {modem_path} 115200", env={'TERM': 'vt100'})
