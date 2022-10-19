@@ -15,6 +15,8 @@ import ast
 modem_path = os.environ['MODEM_PATH']
 sim_key = os.environ['SIM_KEY']
 
+print(os.environ)
+
 # Allow faster script restart
 socketserver.TCPServer.allow_reuse_address = True
 
@@ -25,7 +27,7 @@ def gsm_send(message):
         try:
             print(f"Attempting to send message: {message} {attempts}/5")
             os.system("screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' | xargs kill 2> /dev/null")
-            child = pexpect.spawn(f"screen -S gsm {modem_path} 115200")
+            child = pexpect.spawn(f"screen -S gsm {modem_path} 115200", env={'TERM': 'vt100'})
 
             # Enable.. something?
             child.send("AT+CFUN=1\r\n")

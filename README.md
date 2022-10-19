@@ -24,6 +24,8 @@ services:
             #- GSM_MODEM=/dev/gsm_modem
             # SIM key from Hologram Device dashboard
             - SIM_KEY=XXXX
+        devices:
+            - /dev/gsm_modem:/dev/gsm_modem
         restart: always
 ```
 ### Home Assistant Configuration
