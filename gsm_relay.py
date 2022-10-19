@@ -11,6 +11,7 @@ import json
 import pexpect
 import sys
 import ast
+import time
 
 modem_path = os.environ['MODEM_PATH']
 sim_key = os.environ['SIM_KEY']
@@ -19,54 +20,92 @@ sim_key = os.environ['SIM_KEY']
 socketserver.TCPServer.allow_reuse_address = True
 
 def gsm_send(message):
-    attempts = 1
+    attempts = 0
     success = False
-    while attempts < 6:
-        try:
+
+    while attempts < 5:
+            os.system("killall screen 2> /dev/null; screen -wipe 2> /dev/null")
+            attempts += 1
             print(f"Attempting to send message: {message} {attempts}/5")
-            os.system("screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' | xargs kill 2> /dev/null")
-            child = pexpect.spawn(f"screen -S gsm {modem_path} 115200", env={'TERM': 'vt100'})
+
+            try:
+                child = pexpect.spawn(f"screen -S gsm {modem_path} 115200", env={'TERM': 'vt100'})
+            except Exception as e:
+                print(f"spawn error: {e}")   
+                continue             
 
             # Enable.. something?
-            child.send("AT+CFUN=1\r\n")
-            child.expect("OK", timeout=5)
+            try:
+                child.send("AT+CFUN=1\r\n")
+                child.expect("OK", timeout=5)
+            except Exception as e:
+                print(f"CFUN Error: {e}")
+                time.sleep(10)
+                continue
 
             # Shut the modem
-            child.send("AT+CIPSHUT\r\n")
-            child.expect("SHUT OK", timeout=5)
+            try:
+                child.send("AT+CIPSHUT\r\n")
+                child.expect("SHUT OK", timeout=5)
+            except Exception as e:
+                print(f"CIPSHUT Error: {e}")
+                time.sleep(10)
+                continue
 
             # Set APN
-            child.send("AT+CSTT=\"hologram\"\r\n")
-            child.expect("OK", timeout=5)
+            try:
+                child.send("AT+CSTT=\"hologram\"\r\n")
+                child.expect("OK", timeout=5)
+            except Exception as e:
+                print(f"CSST Error: {e}")
+                time.sleep(10)
+                continue
 
             # Connect
-            child.send("AT+CIICR\r\n")
-            child.expect("OK", timeout=10)
+            try:
+                child.send("AT+CIICR\r\n")
+                child.expect("OK", timeout=20)
+            except Exception as e:
+                print(f"CIICR Error: {e}")
+                time.sleep(10)
+                continue
 
             # Connect and show IP
-            child.send("AT+CIFSR\r\n")
-            child.expect("10.*", timeout=5)
+            try:
+                child.send("AT+CIFSR\r\n")
+                child.expect("10.*", timeout=5)
+            except Exception as e:
+                print(f"CIFSR Error: {e}")
+                time.sleep(10)
+                continue
 
             # Initiate TCP
-            child.send('AT+CIPSTART="TCP","cloudsocket.hologram.io",9999\r\n')
-            child.expect("CONNECT OK", timeout=5)
+            try:
+                child.send('AT+CIPSTART="TCP","cloudsocket.hologram.io",9999\r\n')
+                child.expect("CONNECT OK", timeout=5)
+            except Exception as e:
+                print(f"CIPSTART Error: {e}")
+                time.sleep(10)
+                continue
 
             # Prepare message
-            child.send(f'AT+CIPSEND={len(message)}\r\n')
-            child.expect(">.*")
+            try:
+                child.send(f'AT+CIPSEND={len(message)}\r\n')
+                child.expect(">.*")
 
-            child.send(f'{message}\r\n')
-            child.expect("OK")
+                child.send(f'{message}\r\n')
+                child.expect("OK")
+            except Exception as e:
+                print(f"CIPSEND Error: {e}")
+                time.sleep(10)
+                continue
 
+            # Shut the modem down again
             child.send('AT+CIPSHUT\r\n')
-            child.expect("OK")
+
             success = True
             break
 
-        except Exception as e:
-            print(f"Failed to send message. Attempt {attempts}/5 ({e})")
-            attempts += 1
-        
     if success:
         print(f"Successfully sent message after {attempts} attempts")
 
