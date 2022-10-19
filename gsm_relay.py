@@ -36,75 +36,92 @@ def gsm_send(message):
                 continue             
 
             # Enable flight mode
-            try:
-                child.send("AT+CFUN=0\r\n")
-                child.expect("OK", timeout=5)
-            except Exception as e:
-                print(f"CFUN=0 Error: {e}")
-                time.sleep(10)
-                continue
+            # try:
+            #     command = "AT+CFUN=0"
+            #     child.send(f"{command}\r\n")
+            #     child.expect("OK", timeout=5)
+            #     print(f"{command} success")
+            # except Exception as e:
+            #     print(f"{command} Error: {e}")
+            #     time.sleep(10)
+            #     continue
 
             # Disable flight mode
             try:
-                child.send("AT+CFUN=1\r\n")
+                command = "AT+CFUN=1"
+                child.send(f"{command}\r\n")
                 child.expect("OK", timeout=5)
+                print(f"{command} success")
             except Exception as e:
-                print(f"CFUN=1 Error: {e}")
+                print(f"{command} Error: {e}")
                 time.sleep(10)
                 continue
 
             # Shut the modem
             try:
-                child.send("AT+CIPSHUT\r\n")
+                command = "AT+CIPSHUT"
+                child.send(f"{command}\r\n")
                 child.expect("SHUT OK", timeout=5)
+                print(f"{command} success")
             except Exception as e:
-                print(f"CIPSHUT Error: {e}")
+                print(f"{command} Error: {e}")
                 time.sleep(10)
                 continue
 
             # Set APN
             try:
-                child.send("AT+CSTT=\"hologram\"\r\n")
+                command = 'AT+CSTT="hologram"'
+                child.send(f"{command}\r\n")
                 child.expect("OK", timeout=5)
+                print(f"{command} success")
             except Exception as e:
-                print(f"CSST Error: {e}")
+                print(f"{command} Error: {e}")
                 time.sleep(10)
                 continue
 
             # Connect
             try:
-                child.send("AT+CIICR\r\n")
-                child.expect("OK", timeout=20)
+                command = "AT+CIICR"
+                child.send(f"{command}\r\n")
+                child.expect("OK", timeout=30)
+                print(f"{command} success")
             except Exception as e:
-                print(f"CIICR Error: {e}")
-                time.sleep(10)
+                print(f"{command} Error: {e}")
+                time.sleep(15)
                 continue
 
             # Connect and show IP
             try:
-                child.send("AT+CIFSR\r\n")
+                command = "AT+CIFSR"
+                child.send(f"{command}\r\n")
                 child.expect("10.*", timeout=5)
+                print(f"{command} success")
             except Exception as e:
-                print(f"CIFSR Error: {e}")
+                print(f"{command} Error: {e}")
                 time.sleep(10)
                 continue
 
             # Initiate TCP
             try:
-                child.send('AT+CIPSTART="TCP","cloudsocket.hologram.io",9999\r\n')
+                command = 'AT+CIPSTART="TCP","cloudsocket.hologram.io",9999'
+                child.send(f"{command}\r\n")
                 child.expect("CONNECT OK", timeout=5)
+                print(f"{command} success")
             except Exception as e:
-                print(f"CIPSTART Error: {e}")
+                print(f"{command} Error: {e}")
                 time.sleep(10)
                 continue
 
             # Prepare message
             try:
-                child.send(f'AT+CIPSEND={len(message)}\r\n')
+                command = f"AT+CIPSEND={len(message)}"
+                child.send(f"{command}\r\n")
                 child.expect(">.*")
 
                 child.send(f'{message}\r\n')
                 child.expect("OK")
+                print(f"{command} success")
+
             except Exception as e:
                 print(f"CIPSEND Error: {e}")
                 time.sleep(10)
