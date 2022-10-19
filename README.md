@@ -1,7 +1,7 @@
-# Thermostat MQTT container
+# GSM Message Relay container
 <a href="https://www.buymeacoffee.com/aneisch" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-black.png" width="150px" height="35px" alt="Buy Me A Coffee" style="height: 35px !important;width: 150px !important;" ></a><br>
 
-Acts as a message gateway for SIM800C GSM module. Accepts messages via POST and attempts to send them over GSM network to Hologram messaging API. 
+Acts as a message gateway for SIM800C cellular modem (and probably works with others). Accepts messages via POST and interacts with the modem to attempt to send over network to Hologram messaging API.
 
 ## Usage
 To transmit a message:
