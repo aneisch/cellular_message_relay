@@ -30,3 +30,12 @@ services:
 ### Home Assistant Configuration
 
 Works great with [RESTful Notifications](https://www.home-assistant.io/integrations/notify.rest/) to relay messages.
+
+```yaml
+# configration.yaml
+notify:
+  - name: gsm_message
+    platform: rest
+    resource: http://10.0.1.22:9999/send_message
+    method: POST_JSON
+```
