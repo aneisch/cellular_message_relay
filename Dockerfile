@@ -18,4 +18,6 @@ RUN chmod +x /usr/bin/gsm_relay.py && \
 
 USER gsm_relay
 
+RUN export TERM='vt100'
+
 ENTRYPOINT python -u /usr/bin/gsm_relay.py
