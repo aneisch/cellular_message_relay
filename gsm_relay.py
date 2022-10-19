@@ -35,12 +35,21 @@ def gsm_send(message):
                 print(f"spawn error: {e}")   
                 continue             
 
-            # Enable.. something?
+            # Enable flight mode
+            try:
+                child.send("AT+CFUN=0\r\n")
+                child.expect("OK", timeout=5)
+            except Exception as e:
+                print(f"CFUN=0 Error: {e}")
+                time.sleep(10)
+                continue
+
+            # Disable flight mode
             try:
                 child.send("AT+CFUN=1\r\n")
                 child.expect("OK", timeout=5)
             except Exception as e:
-                print(f"CFUN Error: {e}")
+                print(f"CFUN=1 Error: {e}")
                 time.sleep(10)
                 continue
 
