@@ -12,6 +12,8 @@ import pexpect
 import sys
 import ast
 import time
+import queue
+import threading 
 
 modem_path = os.environ['MODEM_PATH']
 sim_key = os.environ['SIM_KEY']
@@ -135,7 +137,12 @@ def gsm_send(message):
 
     if success:
         print(f"Successfully sent message after {attempts} attempts")
+        q.task_done()
 
+def worker():
+    while True:
+        message = q.get()
+        gsm_send(message)
 
 class MyHttpRequestHandler(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
@@ -164,7 +171,8 @@ class MyHttpRequestHandler(BaseHTTPRequestHandler):
             
             message = '''{"k":"%s","d":"%s"}''' % (sim_key,message)
             self.send_empty_200()
-            gsm_send(message)
+            q.put(message)
+            print(q.qsize())
 
         else:
             self.send_response(400)
@@ -176,4 +184,9 @@ class ThreadingSimpleServer(ThreadingMixIn, HTTPServer):
     pass
 
 server = ThreadingSimpleServer(('0.0.0.0', 9999), MyHttpRequestHandler)
+
+q = queue.Queue()
+threading.Thread(target=worker, daemon=True).start()
+q.join()
+
 server.serve_forever()
