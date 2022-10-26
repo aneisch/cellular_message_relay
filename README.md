@@ -24,6 +24,8 @@ services:
             #- GSM_MODEM=/dev/gsm_modem
             # SIM key from Hologram Device dashboard
             - SIM_KEY=XXXX
+            # Set a max queue size to limit usage in case we think we need to send 10,000 messages or something
+            - MAX_QUEUE_SIZE=5
         devices:
             - /dev/gsm_modem:/dev/gsm_modem
         restart: always

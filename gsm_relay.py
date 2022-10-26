@@ -172,7 +172,7 @@ class MyHttpRequestHandler(BaseHTTPRequestHandler):
             message = '''{"k":"%s","d":"%s"}''' % (sim_key,message)
             self.send_empty_200()
             q.put(message)
-            print(q.qsize())
+            print(f"Added '{message}' to message queue")
 
         else:
             self.send_response(400)
@@ -185,7 +185,7 @@ class ThreadingSimpleServer(ThreadingMixIn, HTTPServer):
 
 server = ThreadingSimpleServer(('0.0.0.0', 9999), MyHttpRequestHandler)
 
-q = queue.Queue()
+q = queue.Queue(maxsize=int(os.environ['MAX_QUEUE_SIZE']))
 threading.Thread(target=worker, daemon=True).start()
 q.join()
 
