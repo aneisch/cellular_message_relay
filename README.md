@@ -41,4 +41,6 @@ notify:
     platform: rest
     resource: http://10.0.1.22:9999/send_message
     method: POST_JSON
+    data:
+      priority: "{{ data.priority }}"
 ```

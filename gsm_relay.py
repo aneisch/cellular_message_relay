@@ -31,6 +31,11 @@ def gsm_send(message):
             attempts += 1
             print(f"Attempting to send message: {message} {attempts}/{max_attempts}")
 
+            #
+            # q.task_done()
+            # return
+            #
+
             try:
                 child = pexpect.spawn(f"screen -S gsm {modem_path} 115200", env={'TERM': 'vt100'})
             except Exception as e:
@@ -120,7 +125,8 @@ def gsm_send(message):
                 child.send(f"{command}\r\n")
                 child.expect(">.*")
 
-                child.send(f'{message}\r\n')
+                print(f"{message}\r\n")
+                child.send(f"{message}\r\n")
                 child.expect("OK")
                 print(f"{command} success")
 
@@ -162,14 +168,16 @@ class MyHttpRequestHandler(BaseHTTPRequestHandler):
 
         if "/send_message" in final_locator:
             try:
-                my_dict = ast.literal_eval(data)
-                message = my_dict['message']
+                data = ast.literal_eval(data)
             except:
                 self.send_response(400)
                 self.send_header("Content-Length", "0")
                 self.end_headers()
             
-            message = '''{"k":"%s","d":"%s"}''' % (sim_key,message)
+            # Terrible minipulation of this payload, but it works
+            data = json.dumps(data).replace('"','\\"')
+
+            message = '''{"k":"%s","d":"%s"}''' % (sim_key,data)
             self.send_empty_200()
             q.put(message)
             print(f"Added '{message}' to message queue")
