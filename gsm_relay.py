@@ -30,28 +30,25 @@ def gsm_send(message):
             os.system("killall screen 2> /dev/null; screen -wipe 2> /dev/null")
             attempts += 1
             print(f"Attempting to send message: {message} {attempts}/{max_attempts}")
-
-            #
-            # q.task_done()
-            # return
-            #
+                
 
             try:
                 child = pexpect.spawn(f"screen -S gsm {modem_path} 115200", env={'TERM': 'vt100'})
             except Exception as e:
                 print(f"spawn error: {e}")   
-                continue             
+                continue        
 
-            # Enable flight mode
-            # try:
-            #     command = "AT+CFUN=0"
-            #     child.send(f"{command}\r\n")
-            #     child.expect("OK", timeout=5)
-            #     print(f"{command} success")
-            # except Exception as e:
-            #     print(f"{command} Error: {e}")
-            #     time.sleep(10)
-            #     continue
+            if attempts == 4:     
+                #Enable flight mode
+                try:
+                    command = "AT+CFUN=0"
+                    child.send(f"{command}\r\n")
+                    child.expect("OK", timeout=5)
+                    print(f"{command} success")
+                except Exception as e:
+                    print(f"{command} Error: {e}")
+                    time.sleep(10)
+                    continue
 
             # Disable flight mode
             try:
