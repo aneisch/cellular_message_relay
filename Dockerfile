@@ -4,19 +4,19 @@ RUN apk add --no-cache --update screen bash
 
 EXPOSE 9999
 
-ENV MODEM_PATH /dev/gsm_modem
+ENV MODEM_PATH /dev/usb_modem
 ENV SIM_KEY XXXXXX
 ENV MAX_QUEUE_SIZE 10
 
-COPY ./gsm_relay.py /usr/bin/gsm_relay.py
+COPY ./usb_modem_relay.py /usr/bin/usb_modem_relay.py
 COPY ./requirements.txt /tmp/
 
-RUN chmod +x /usr/bin/gsm_relay.py && \
+RUN chmod +x /usr/bin/usb_modem_relay.py && \
   pip install --no-cache-dir -r /tmp/requirements.txt && \
-  adduser -D gsm_relay && \
+  adduser -D usb_modem_relay && \
   apk --purge del apk-tools && \
   rm /tmp/requirements.txt
 
-USER gsm_relay
+USER usb_modem_relay
 
-ENTRYPOINT python -u /usr/bin/gsm_relay.py
+ENTRYPOINT python -u /usr/bin/usb_modem_relay.py
