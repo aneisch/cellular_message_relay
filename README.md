@@ -1,7 +1,9 @@
 # GSM Message Relay container
 <a href="https://www.buymeacoffee.com/aneisch" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-black.png" width="150px" height="35px" alt="Buy Me A Coffee" style="height: 35px !important;width: 150px !important;" ></a><br>
 
-Acts as a message gateway for SIM800C cellular modem (and probably works with others). Accepts messages via POST and interacts with the modem to attempt to send over network to Hologram messaging API.
+Acts as a message gateway for SIM7080G cellular modem (and probably works with others). Accepts messages via POST and interacts with the modem to attempt to send over network to Hologram messaging API.
+
+[See Here](https://support.hologram.io/hc/en-us/articles/360036559494-SIMCOM-SIM7000)
 
 ## Usage
 To transmit a message:
