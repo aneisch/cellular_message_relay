@@ -14,9 +14,9 @@ curl -vvv -X POST -d '{"message":"hi there from a cellular network!"}' localhost
 ```yaml
 version: '3.2'
 services:
-    gsm_message_relay:
-        container_name: gsm_message_relay
-        image: ghcr.io/aneisch/gsm_message_relay:sim7080g
+    cellular_message_relay:
+        container_name: cellular_message_relay
+        image: ghcr.io/aneisch/cellular_message_relay:sim7080g
         ports:
             - '9999:9999'
         environment:
