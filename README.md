@@ -17,19 +17,19 @@ curl -vvv -X POST -d '{"message":"hi there from a cellular network!"}' localhost
 version: '3.2'
 services:
     gsm_message_relay:
-        container_name: gsm_message_relay
-        image: ghcr.io/aneisch/gsm_message_relay:latest
+        container_name: usb_message_relay
+        image: ghcr.io/aneisch/usb_message_relay:latest
         ports:
             - '9999:9999'
         environment:
-            # Optional GSM_MODEM - defaults to /dev/gsm_modem
-            #- GSM_MODEM=/dev/gsm_modem
+            # Optional MODEM_PATH - defaults to /dev/usb_modem
+            #- MODEM_PATH=/dev/usb_modem
             # SIM key from Hologram Device dashboard
             - SIM_KEY=XXXX
             # Set a max queue size to limit usage in case we think we need to send 10,000 messages or something
             - MAX_QUEUE_SIZE=5
         devices:
-            - /dev/gsm_modem:/dev/gsm_modem
+            - /dev/usb_modem:/dev/usb_modem
         restart: always
 ```
 ### Home Assistant Configuration
