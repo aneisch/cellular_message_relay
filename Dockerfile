@@ -6,6 +6,8 @@ EXPOSE 9999
 
 ENV MODEM_PATH /dev/cellular_modem
 ENV SIM_KEY XXXXXX
+ENV HOST cloudsocket.hologram.io
+ENV PORT 9999
 ENV MAX_QUEUE_SIZE 10
 
 COPY ./cellular_message_relay.py /usr/bin/cellular_message_relay.py
