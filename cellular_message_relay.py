@@ -120,7 +120,7 @@ def gsm_send(message):
             try:
                 command = "AT+CNACT?"
                 child.send(f"{command}\r\n")
-                child.expect(".*10\..*", timeout=30)
+                child.expect(".*10\..*", timeout=10)
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
