@@ -150,6 +150,7 @@ def gsm_send(message):
             # Prepare message
             try:
                 command = f"AT+CASEND=0,{len(message)}"
+                print(command)
                 child.send(f"{command}\r\n")
                 child.expect(">.*")
 
