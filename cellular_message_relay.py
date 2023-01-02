@@ -163,32 +163,30 @@ def gsm_send(message):
             # Prepare message
             try:
                 command = f"AT+CASEND=0,{len(message)}"
-                print(command)
                 child.send(f"{command}\r\n")
                 child.expect(">.*")
-
-                print(f"{message}\r\n")
                 child.send(f"{message}\r\n")
-                child.expect("OK")
+                child.expect(".*CADATAIND: 0", timeout=10)
                 print(f"{command} success")
-
             except Exception as e:
                 print(f"CASEND Error: {e}")
-                time.sleep(10)
-                continue
-
-            # Check message ACK
-            try:
-                command = 'AT+CAACK=0'
-                child.send(f"{command}\r\n")
-                child.expect(f"{len(message)},0", timeout=5)
-                print(f"{command} success")
-            except Exception as e:
-                print(f"{command} Error: {e}")
                 command = 'AT+CACLOSE=0'
                 child.send(f"{command}\r\n")
                 time.sleep(10)
                 continue
+
+            # # Check message ACK
+            # try:
+            #     command = 'AT+CAACK=0'
+            #     child.send(f"{command}\r\n")
+            #     child.expect(f"{len(message)},0", timeout=5)
+            #     print(f"{command} success")
+            # except Exception as e:
+            #     print(f"{command} Error: {e}")
+            #     command = 'AT+CACLOSE=0'
+            #     child.send(f"{command}\r\n")
+            #     time.sleep(10)
+            #     continue
 
             # Deactivate PDP
             command = 'AT+CNACT=0,0'
