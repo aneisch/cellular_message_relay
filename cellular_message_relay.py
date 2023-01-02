@@ -61,9 +61,51 @@ def gsm_send(message):
                 time.sleep(10)
                 continue
 
-            # Set to LTE only
+            # # Set to LTE only
+            # try:
+            #     command = "AT+CNMP=38"
+            #     child.send(f"{command}\r\n")
+            #     child.expect("OK", timeout=5)
+            #     print(f"{command} success")
+            # except Exception as e:
+            #     print(f"{command} Error: {e}")
+            #     time.sleep(10)
+            #     continue
+
+            # # Set to Cat-M1 over NB-IoT
+            # try:
+            #     command = "AT+CMNB=1"
+            #     child.send(f"{command}\r\n")
+            #     child.expect("OK", timeout=5)
+            #     print(f"{command} success")
+            # except Exception as e:
+            #     print(f"{command} Error: {e}")
+            #     time.sleep(10)
+            #     continue
+
+            # Check IP
             try:
-                command = "AT+CNMP=38"
+                command = "AT+CNACT?"
+                child.send(f"{command}\r\n")
+                print(f"{command} success")
+            except Exception as e:
+                print(f"{command} Error: {e}")
+                time.sleep(10)
+                continue
+
+            # Deactivate PDP
+            try:
+                command = 'AT+CNACT=0,0'
+                child.send(f"{command}\r\n")
+                print(f"{command} success")
+            except Exception as e:
+                print(f"{command} Error: {e}")
+                time.sleep(10)
+                continue
+
+            # Activate PDP
+            try:
+                command = 'AT+CNACT=0,1'
                 child.send(f"{command}\r\n")
                 child.expect("OK", timeout=5)
                 print(f"{command} success")
@@ -72,42 +114,9 @@ def gsm_send(message):
                 time.sleep(10)
                 continue
 
-            # Set to Cat-M1 over NB-IoT
+            # Check IP
             try:
-                command = "AT+CMNB=1"
-                child.send(f"{command}\r\n")
-                child.expect("OK", timeout=5)
-                print(f"{command} success")
-            except Exception as e:
-                print(f"{command} Error: {e}")
-                time.sleep(10)
-                continue
-
-            # Shut the modem
-            try:
-                command = "AT+CIPSHUT"
-                child.send(f"{command}\r\n")
-                child.expect("SHUT OK", timeout=5)
-                print(f"{command} success")
-            except Exception as e:
-                print(f"{command} Error: {e}")
-                time.sleep(10)
-                continue
-
-            # Set APN
-            try:
-                command = 'AT+CSTT="hologram"'
-                child.send(f"{command}\r\n")
-                child.expect("OK", timeout=5)
-                print(f"{command} success")
-            except Exception as e:
-                print(f"{command} Error: {e}")
-                time.sleep(10)
-                continue
-
-            # Connect
-            try:
-                command = "AT+CIICR"
+                command = "AT+CNACT?"
                 child.send(f"{command}\r\n")
                 child.expect("OK", timeout=30)
                 print(f"{command} success")
@@ -116,22 +125,22 @@ def gsm_send(message):
                 time.sleep(15)
                 continue
 
-            # Connect and show IP
+            # Set up TCP
             try:
-                command = "AT+CIFSR"
+                command = 'AT+CASSLCFG=0,"SSL",0'
                 child.send(f"{command}\r\n")
-                child.expect("10.*", timeout=5)
+                child.expect("OK", timeout=5)
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
                 time.sleep(10)
                 continue
 
-            # Initiate TCP
+            # Open connection
             try:
-                command = 'AT+CIPSTART="TCP","cloudsocket.hologram.io",9999'
+                command = 'AT+CAOPEN=0,0,"TCP","cloudsocket.hologram.io",9999'
                 child.send(f"{command}\r\n")
-                child.expect("CONNECT OK", timeout=5)
+                child.expect("OK", timeout=5)
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
@@ -140,7 +149,7 @@ def gsm_send(message):
 
             # Prepare message
             try:
-                command = f"AT+CIPSEND={len(message)}"
+                command = f"AT+CASEND={len(message)}"
                 child.send(f"{command}\r\n")
                 child.expect(">.*")
 
@@ -150,13 +159,26 @@ def gsm_send(message):
                 print(f"{command} success")
 
             except Exception as e:
-                print(f"CIPSEND Error: {e}")
+                print(f"CASEND Error: {e}")
                 time.sleep(10)
                 continue
 
-            # Shut the modem down again
-            child.send('AT+CIPSHUT\r\n')
+            # Check message ACK
+            try:
+                command = 'AT+CAACK=0'
+                child.send(f"{command}\r\n")
+                child.expect(f"{len(message)},0", timeout=5)
+                print(f"{command} success")
+            except Exception as e:
+                print(f"{command} Error: {e}")
+                command = 'AT+CACLOSE=0'
+                child.send(f"{command}\r\n")
+                time.sleep(10)
+                continue
 
+            # Deactivate PDP
+            command = 'AT+CNACT=0,0'
+            child.send(f"{command}\r\n")
             success = True
             break
 
