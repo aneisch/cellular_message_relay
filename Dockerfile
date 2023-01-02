@@ -8,7 +8,7 @@ ENV MODEM_PATH /dev/cellular_modem
 ENV SIM_KEY XXXXXX
 ENV MAX_QUEUE_SIZE 10
 
-COPY ./usb_modem_relay.py /usr/bin/cellular_message_relay.py
+COPY ./cellular_message_relay.py /usr/bin/cellular_message_relay.py
 COPY ./requirements.txt /tmp/
 
 RUN chmod +x /usr/bin/cellular_message_relay.py && \
