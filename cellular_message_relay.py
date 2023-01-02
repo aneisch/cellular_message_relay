@@ -131,7 +131,18 @@ def gsm_send(message):
             try:
                 command = 'AT+CASSLCFG=0,"SSL",0'
                 child.send(f"{command}\r\n")
-                child.expect("OK", timeout=5)
+                #child.expect("OK", timeout=5)
+                print(f"{command} success")
+            except Exception as e:
+                print(f"{command} Error: {e}")
+                time.sleep(10)
+                continue
+
+            # Close any session
+            try:
+                command = 'AT+CACLOSE=0'
+                child.send(f"{command}\r\n")
+                #child.expect("OK", timeout=5)
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
@@ -142,7 +153,7 @@ def gsm_send(message):
             try:
                 command = f'AT+CAOPEN=0,0,"TCP","{host}",{int(port)}'
                 child.send(f"{command}\r\n")
-                child.expect("OK", timeout=5)
+                child.expect("+CAOPEN: 0,0", timeout=10)
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
