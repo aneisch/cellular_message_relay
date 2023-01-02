@@ -17,6 +17,8 @@ import threading
 
 modem_path = os.environ['MODEM_PATH']
 sim_key = os.environ['SIM_KEY']
+host = os.environ['HOST']
+port = os.environ['PORT']
 
 # Allow faster script restart
 socketserver.TCPServer.allow_reuse_address = True
@@ -138,7 +140,7 @@ def gsm_send(message):
 
             # Open connection
             try:
-                command = 'AT+CAOPEN=0,0,"TCP","cloudsocket.hologram.io",9999'
+                command = f'AT+CAOPEN=0,0,"TCP","{host}",{int(port)}'
                 child.send(f"{command}\r\n")
                 child.expect("OK", timeout=5)
                 print(f"{command} success")
