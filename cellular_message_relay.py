@@ -163,7 +163,6 @@ def gsm_send(message):
                     command = 'AT+CACLOSE=0'
                     child.send(f"{command}\r\n")
                     #time.sleep(2)
-                    socket_connected = True
 
             if socket_connected == False:
                 continue
@@ -183,7 +182,6 @@ def gsm_send(message):
                     print(f"CASEND Error: {e}")
                     child.send(f"{command}\r\n")
                     #time.sleep(10)
-                    message_sent = True
 
             if message_sent == False:
                 continue
