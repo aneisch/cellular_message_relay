@@ -155,7 +155,7 @@ def gsm_send(message):
                     socket_connected = False
                     command = f'AT+CAOPEN=0,0,"TCP","{host}",{int(port)}'
                     child.send(f"{command}\r\n")
-                    child.expect([".*CAOPEN: 0,0",".*CADATAIND: 0"], timeout=10)
+                    child.expect([".*CAOPEN: 0,0",".*CADATAIND: 0"], timeout=20)
                     print(f"{command} success")
                     break
                 except Exception as e:
