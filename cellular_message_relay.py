@@ -150,7 +150,7 @@ def gsm_send(message):
                 continue
 
             # Open connection, try a few times in case socket error
-            for i in range(0,5):
+            for i in range(0,8):
                 try:
                     socket_connected = False
                     command = f'AT+CAOPEN=0,0,"TCP","{host}",{int(port)}'
@@ -165,8 +165,8 @@ def gsm_send(message):
                     #time.sleep(2)
                     socket_connected = True
 
-                if socket_connected == False:
-                    continue
+            if socket_connected == False:
+                continue
 
             # Prepare and send message. Try a few times
             for i in range(0,5):
@@ -185,8 +185,8 @@ def gsm_send(message):
                     #time.sleep(10)
                     message_sent = True
 
-                if message_sent == False:
-                    continue
+            if message_sent == False:
+                continue
 
             # Close TCP and Deactivate PDP
             child.send(f"AT+CACLOSE=0\r\n")
