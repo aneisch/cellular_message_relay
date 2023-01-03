@@ -32,7 +32,6 @@ def gsm_send(message):
             os.system("killall screen 2> /dev/null; screen -wipe 2> /dev/null")
             attempts += 1
             print(f"Attempting to send message: {message} {attempts}/{max_attempts}")
-                
 
             try:
                 child = pexpect.spawn(f"screen -S gsm {modem_path} 115200", env={'TERM': 'vt100'})
@@ -63,27 +62,27 @@ def gsm_send(message):
                 #time.sleep(10)
                 continue
 
-            # # Set to LTE only
-            # try:
-            #     command = "AT+CNMP=38"
-            #     child.send(f"{command}\r\n")
-            #     child.expect("OK", timeout=5)
-            #     print(f"{command} success")
-            # except Exception as e:
-            #     print(f"{command} Error: {e}")
-            #     time.sleep(10)
-            #     continue
+            # Set to LTE only
+            try:
+                command = "AT+CNMP=38"
+                child.send(f"{command}\r\n")
+                child.expect("OK", timeout=5)
+                print(f"{command} success")
+            except Exception as e:
+                print(f"{command} Error: {e}")
+                time.sleep(10)
+                continue
 
-            # # Set to Cat-M1 over NB-IoT
-            # try:
-            #     command = "AT+CMNB=1"
-            #     child.send(f"{command}\r\n")
-            #     child.expect("OK", timeout=5)
-            #     print(f"{command} success")
-            # except Exception as e:
-            #     print(f"{command} Error: {e}")
-            #     time.sleep(10)
-            #     continue
+            # Set to Cat-M1 over NB-IoT
+            try:
+                command = "AT+CMNB=1"
+                child.send(f"{command}\r\n")
+                child.expect("OK", timeout=5)
+                print(f"{command} success")
+            except Exception as e:
+                print(f"{command} Error: {e}")
+                time.sleep(10)
+                continue
 
             # Check IP
             try:
@@ -169,33 +168,26 @@ def gsm_send(message):
                 if socket_connected == False:
                     continue
 
-            # Prepare message
-            try:
-                command = f"AT+CASEND=0,{len(message)}"
-                child.send(f"{command}\r\n")
-                child.expect(">.*")
-                child.send(f"{message}\r\n")
-                child.expect([".*OK.*","CADATAIND"], timeout=30)
-                print(f"{command} success")
-            except Exception as e:
-                print(f"CASEND Error: {e}")
-                command = 'AT+CACLOSE=0'
-                child.send(f"{command}\r\n")
-                #time.sleep(10)
-                continue
+            # Prepare and send message. Try a few times
+            for i in range(0,5):
+                try:
+                    message_sent = False
+                    command = f"AT+CASEND=0,{len(message)}"
+                    child.send(f"{command}\r\n")
+                    child.expect(">.*")
+                    child.send(f"{message}\r\n")
+                    child.expect([".*OK.*","CADATAIND"], timeout=30)
+                    print(f"{command} success")
+                    break
+                except Exception as e:
+                    print(f"CASEND Error: {e}")
+                    command = 'AT+CACLOSE=0'
+                    child.send(f"{command}\r\n")
+                    #time.sleep(10)
+                    message_sent = True
 
-            # # Check message ACK
-            # try:
-            #     command = 'AT+CAACK=0'
-            #     child.send(f"{command}\r\n")
-            #     child.expect(f"{len(message)},0", timeout=5)
-            #     print(f"{command} success")
-            # except Exception as e:
-            #     print(f"{command} Error: {e}")
-            #     command = 'AT+CACLOSE=0'
-            #     child.send(f"{command}\r\n")
-            #     time.sleep(10)
-            #     continue
+                if message_sent == False:
+                    continue
 
             # Close TCP and Deactivate PDP
             child.send(f"AT+CACLOSE=0\r\n")
