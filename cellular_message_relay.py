@@ -73,16 +73,16 @@ def gsm_send(message):
                 time.sleep(10)
                 continue
 
-            # Set to Cat-M1 over NB-IoT
-            try:
-                command = "AT+CMNB=1"
-                child.send(f"{command}\r\n")
-                child.expect("OK", timeout=5)
-                print(f"{command} success")
-            except Exception as e:
-                print(f"{command} Error: {e}")
-                time.sleep(10)
-                continue
+            # # Set to Cat-M1 over NB-IoT
+            # try:
+            #     command = "AT+CMNB=1"
+            #     child.send(f"{command}\r\n")
+            #     child.expect("OK", timeout=5)
+            #     print(f"{command} success")
+            # except Exception as e:
+            #     print(f"{command} Error: {e}")
+            #     time.sleep(10)
+            #     continue
 
             # Check IP
             try:
