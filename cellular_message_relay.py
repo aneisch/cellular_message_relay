@@ -168,7 +168,7 @@ def gsm_send(message):
                 child.send(f"{command}\r\n")
                 child.expect(">.*")
                 child.send(f"{message}\r\n")
-                child.expect(".*OK.*", timeout=30)
+                child.expect([".*OK.*","CADATAIND"], timeout=30)
                 print(f"{command} success")
             except Exception as e:
                 print(f"CASEND Error: {e}")
