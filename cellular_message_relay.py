@@ -175,8 +175,11 @@ def gsm_send(message):
                     command = f"AT+CASEND=0,{len(message)}"
                     child.send(f"{command}\r\n")
                     child.expect(">.*")
-                    child.send(f"{message}\r\n")
-                    child.expect([".*OK.*","CADATAIND"], timeout=5)
+                    print(f"{command} success")
+                    command = f"{message}"
+                    child.send(f"{command}\r\n")
+                    #child.expect([".*OK.*","CADATAIND"], timeout=5)
+                    child.expect(".*OK.*", timeout=5)
                     print(f"{command} success")
                     message_sent = True
                     break
