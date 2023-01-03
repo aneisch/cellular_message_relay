@@ -157,6 +157,8 @@ def gsm_send(message):
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
+                command = 'AT+CACLOSE=0'
+                child.send(f"{command}\r\n")
                 time.sleep(2)
                 continue
 
