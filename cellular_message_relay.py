@@ -157,6 +157,7 @@ def gsm_send(message):
                     child.send(f"{command}\r\n")
                     child.expect([".*CAOPEN: 0,0",".*CADATAIND: 0"], timeout=20)
                     print(f"{command} success")
+                    socket_connected = True
                     break
                 except Exception as e:
                     print(f"{command} Error: {e}")
@@ -177,6 +178,7 @@ def gsm_send(message):
                     child.send(f"{message}\r\n")
                     child.expect([".*OK.*","CADATAIND"], timeout=5)
                     print(f"{command} success")
+                    message_sent = True
                     break
                 except Exception as e:
                     print(f"CASEND Error: {e}")
