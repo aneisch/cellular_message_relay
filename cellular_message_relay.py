@@ -127,21 +127,17 @@ def gsm_send(message):
                 #time.sleep(15)
                 continue
 
-            # Set up TCP, try a few times in case socket error
-            for i in range(0,5):
-                try:
-                    socket_connected = False
-                    command = 'AT+CASSLCFG=0,"SSL",0'
-                    child.send(f"{command}\r\n")
-                    #child.expect("OK", timeout=5)
-                    print(f"{command} success")
-                    socket_connected = True
-                    break
-                except Exception as e:
-                    print(f"{command} Error: {e}")
-                    #time.sleep(10)
-                if socket_connected == False:
-                    continue
+            # Set up TCP
+            try:
+                socket_connected = False
+                command = 'AT+CASSLCFG=0,"SSL",0'
+                child.send(f"{command}\r\n")
+                #child.expect("OK", timeout=5)
+                print(f"{command} success")
+            except Exception as e:
+                print(f"{command} Error: {e}")
+                #time.sleep(10)
+                continue
 
             # Close any session
             try:
@@ -154,18 +150,23 @@ def gsm_send(message):
                 #time.sleep(10)
                 continue
 
-            # Open connection
-            try:
-                command = f'AT+CAOPEN=0,0,"TCP","{host}",{int(port)}'
-                child.send(f"{command}\r\n")
-                child.expect([".*CAOPEN: 0,0",".*CADATAIND: 0"], timeout=20)
-                print(f"{command} success")
-            except Exception as e:
-                print(f"{command} Error: {e}")
-                command = 'AT+CACLOSE=0'
-                child.send(f"{command}\r\n")
-                #time.sleep(2)
-                continue
+            # Open connection, try a few times in case socket error
+            for i in range(0,5):
+                try:
+                    socket_connected = False
+                    command = f'AT+CAOPEN=0,0,"TCP","{host}",{int(port)}'
+                    child.send(f"{command}\r\n")
+                    child.expect([".*CAOPEN: 0,0",".*CADATAIND: 0"], timeout=15)
+                    print(f"{command} success")
+                except Exception as e:
+                    print(f"{command} Error: {e}")
+                    command = 'AT+CACLOSE=0'
+                    child.send(f"{command}\r\n")
+                    #time.sleep(2)
+                    socket_connected = True
+
+                if socket_connected == False:
+                    continue
 
             # Prepare message
             try:
