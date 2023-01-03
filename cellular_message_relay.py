@@ -25,7 +25,7 @@ socketserver.TCPServer.allow_reuse_address = True
 
 def gsm_send(message):
     attempts = 0
-    max_attempts = 10
+    max_attempts = 5
     success = False
 
     while attempts < max_attempts:
@@ -150,12 +150,12 @@ def gsm_send(message):
                 continue
 
             # Open connection, try a few times in case socket error
-            for i in range(0,8):
+            for i in range(0,5):
                 try:
                     socket_connected = False
                     command = f'AT+CAOPEN=0,0,"TCP","{host}",{int(port)}'
                     child.send(f"{command}\r\n")
-                    child.expect([".*CAOPEN: 0,0",".*CADATAIND: 0"], timeout=5)
+                    child.expect([".*CAOPEN: 0,0",".*CADATAIND: 0"], timeout=10)
                     print(f"{command} success")
                     break
                 except Exception as e:
