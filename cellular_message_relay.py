@@ -168,7 +168,7 @@ def gsm_send(message):
                 child.send(f"{command}\r\n")
                 child.expect(">.*")
                 child.send(f"{message}\r\n")
-                child.expect("OK", timeout=30)
+                child.expect(".*OK.*", timeout=30)
                 print(f"{command} success")
             except Exception as e:
                 print(f"CASEND Error: {e}")
@@ -190,9 +190,9 @@ def gsm_send(message):
             #     time.sleep(10)
             #     continue
 
-            # Deactivate PDP
-            command = 'AT+CNACT=0,0'
-            child.send(f"{command}\r\n")
+            # Close TCP and Deactivate PDP
+            child.send(f"AT+CACLOSE=0\r\n")
+            child.send(f"AT+CNACT=0,0\r\n")
             success = True
             break
 
