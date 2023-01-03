@@ -182,7 +182,6 @@ def gsm_send(message):
                     break
                 except Exception as e:
                     print(f"CASEND Error: {e}")
-                    child.send(f"{command}\r\n")
                     #time.sleep(10)
 
             if message_sent == False:
