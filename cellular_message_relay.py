@@ -25,7 +25,7 @@ socketserver.TCPServer.allow_reuse_address = True
 
 def gsm_send(message):
     attempts = 0
-    max_attempts = 7
+    max_attempts = 10
     success = False
 
     while attempts < max_attempts:
@@ -40,17 +40,17 @@ def gsm_send(message):
                 print(f"spawn error: {e}")   
                 continue        
 
-            if attempts == 4:     
-                #Enable flight mode
-                try:
-                    command = "AT+CFUN=0"
-                    child.send(f"{command}\r\n")
-                    child.expect("OK", timeout=5)
-                    print(f"{command} success")
-                except Exception as e:
-                    print(f"{command} Error: {e}")
-                    time.sleep(10)
-                    continue
+            # if attempts == 4:     
+            #     #Enable flight mode
+            #     try:
+            #         command = "AT+CFUN=0"
+            #         child.send(f"{command}\r\n")
+            #         child.expect("OK", timeout=5)
+            #         print(f"{command} success")
+            #     except Exception as e:
+            #         print(f"{command} Error: {e}")
+            #         time.sleep(10)
+            #         continue
 
             # Disable flight mode
             try:
@@ -127,16 +127,21 @@ def gsm_send(message):
                 #time.sleep(15)
                 continue
 
-            # Set up TCP
-            try:
-                command = 'AT+CASSLCFG=0,"SSL",0'
-                child.send(f"{command}\r\n")
-                #child.expect("OK", timeout=5)
-                print(f"{command} success")
-            except Exception as e:
-                print(f"{command} Error: {e}")
-                #time.sleep(10)
-                continue
+            # Set up TCP, try a few times in case socket error
+            for i in range(0,5):
+                try:
+                    socket_connected = False
+                    command = 'AT+CASSLCFG=0,"SSL",0'
+                    child.send(f"{command}\r\n")
+                    #child.expect("OK", timeout=5)
+                    print(f"{command} success")
+                    socket_connected = True
+                    break
+                except Exception as e:
+                    print(f"{command} Error: {e}")
+                    #time.sleep(10)
+                if socket_connected == False:
+                    continue
 
             # Close any session
             try:
