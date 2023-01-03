@@ -60,7 +60,7 @@ def gsm_send(message):
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
-                time.sleep(10)
+                #time.sleep(10)
                 continue
 
             # # Set to LTE only
@@ -92,7 +92,7 @@ def gsm_send(message):
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
-                time.sleep(10)
+                #time.sleep(10)
                 continue
 
             # Deactivate PDP
@@ -102,7 +102,7 @@ def gsm_send(message):
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
-                time.sleep(10)
+                #time.sleep(10)
                 continue
 
             # Activate PDP
@@ -113,7 +113,7 @@ def gsm_send(message):
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
-                time.sleep(10)
+                #time.sleep(10)
                 continue
 
             # Check IP
@@ -124,7 +124,7 @@ def gsm_send(message):
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
-                time.sleep(15)
+                #time.sleep(15)
                 continue
 
             # Set up TCP
@@ -135,7 +135,7 @@ def gsm_send(message):
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
-                time.sleep(10)
+                #time.sleep(10)
                 continue
 
             # Close any session
@@ -146,7 +146,7 @@ def gsm_send(message):
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
-                time.sleep(10)
+                #time.sleep(10)
                 continue
 
             # Open connection
@@ -159,7 +159,7 @@ def gsm_send(message):
                 print(f"{command} Error: {e}")
                 command = 'AT+CACLOSE=0'
                 child.send(f"{command}\r\n")
-                time.sleep(2)
+                #time.sleep(2)
                 continue
 
             # Prepare message
@@ -174,7 +174,7 @@ def gsm_send(message):
                 print(f"CASEND Error: {e}")
                 command = 'AT+CACLOSE=0'
                 child.send(f"{command}\r\n")
-                time.sleep(10)
+                #time.sleep(10)
                 continue
 
             # # Check message ACK
