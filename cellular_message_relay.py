@@ -153,7 +153,7 @@ def gsm_send(message):
             try:
                 command = f'AT+CAOPEN=0,0,"TCP","{host}",{int(port)}'
                 child.send(f"{command}\r\n")
-                child.expect([".*CAOPEN: 0,0",".*CADATAIND.*",".*OK.*"], timeout=20)
+                child.expect(".*CAOPEN: 0,0", timeout=20)
                 print(f"{command} success")
             except Exception as e:
                 print(f"{command} Error: {e}")
@@ -166,7 +166,7 @@ def gsm_send(message):
                 child.send(f"{command}\r\n")
                 child.expect(">.*")
                 child.send(f"{message}\r\n")
-                child.expect(["OK",".*CADATAIND.*"], timeout=30)
+                child.expect("OK", timeout=30)
                 print(f"{command} success")
             except Exception as e:
                 print(f"CASEND Error: {e}")
