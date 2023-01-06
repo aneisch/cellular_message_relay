@@ -1,7 +1,7 @@
 # GSM Message Relay container
 <a href="https://www.buymeacoffee.com/aneisch" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-black.png" width="150px" height="35px" alt="Buy Me A Coffee" style="height: 35px !important;width: 150px !important;" ></a><br>
 
-Acts as a message gateway for cellular modems (see branches for different models). Accepts messages via POST and interacts with the modem to attempt to send over network to Hologram messaging API.
+Acts as a message gateway for cellular modems (see branches for different models). Accepts messages via POST and interacts with the modem to attempt to send over network to Hologram messaging API. Use something like https://github.com/aneisch/cellular_bridge or a CloudFlare Worker to bridge the connection to your messaging platform.
 
 ## Usage
 To transmit a message:
