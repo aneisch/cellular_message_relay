@@ -14,6 +14,16 @@ import ast
 import time
 import queue
 import threading 
+import logging
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s -- %(levelname)s -- %(message)s",
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 modem_path = os.environ['MODEM_PATH']
 sim_key = os.environ['SIM_KEY']
@@ -29,14 +39,14 @@ def gsm_send(message):
     success = False
 
     while attempts < max_attempts:
-            os.system("killall screen 2> /dev/null; screen -wipe 2> /dev/null")
+            os.system("killall screen >/dev/null 2>&1; screen -wipe >/dev/null 2>&1")
             attempts += 1
-            print(f"Attempting to send message: {message} {attempts}/{max_attempts}")
+            logger.info(f"Attempting to send message: {message} {attempts}/{max_attempts}")
 
             try:
                 child = pexpect.spawn(f"screen -S gsm {modem_path} 115200", env={'TERM': 'vt100'})
             except Exception as e:
-                print(f"spawn error: {e}")   
+                logger.error(f"spawn error: {e}")   
                 continue        
 
             # if attempts == 4:     
@@ -56,9 +66,10 @@ def gsm_send(message):
                 command = "AT+CFUN=1"
                 child.send(f"{command}\r\n")
                 child.expect("OK", timeout=5)
-                print(f"{command} success")
+                logger.info(f"{command} success")
             except Exception as e:
-                print(f"{command} Error: {e}")
+                e = str(e).split("buffer (last 100 chars): b'")[1].split("'")[0]
+                logger.error(f"{command} Error. Buffer: {e}")
                 #time.sleep(10)
                 continue
 
@@ -67,9 +78,10 @@ def gsm_send(message):
                 command = "AT+CNMP=38"
                 child.send(f"{command}\r\n")
                 child.expect("OK", timeout=5)
-                print(f"{command} success")
+                logger.info(f"{command} success")
             except Exception as e:
-                print(f"{command} Error: {e}")
+                e = str(e).split("buffer (last 100 chars): b'")[1].split("'")[0]
+                logger.error(f"{command} Error. Buffer: {e}")
                 time.sleep(10)
                 continue
 
@@ -88,9 +100,10 @@ def gsm_send(message):
             try:
                 command = "AT+CNACT?"
                 child.send(f"{command}\r\n")
-                print(f"{command} success")
+                logger.info(f"{command} success")
             except Exception as e:
-                print(f"{command} Error: {e}")
+                e = str(e).split("buffer (last 100 chars): b'")[1].split("'")[0]
+                logger.error(f"{command} Error. Buffer: {e}")
                 #time.sleep(10)
                 continue
 
@@ -98,9 +111,10 @@ def gsm_send(message):
             try:
                 command = 'AT+CNACT=0,0'
                 child.send(f"{command}\r\n")
-                print(f"{command} success")
+                logger.info(f"{command} success")
             except Exception as e:
-                print(f"{command} Error: {e}")
+                e = str(e).split("buffer (last 100 chars): b'")[1].split("'")[0]
+                logger.error(f"{command} Error. Buffer: {e}")
                 #time.sleep(10)
                 continue
 
@@ -109,9 +123,10 @@ def gsm_send(message):
                 command = 'AT+CNACT=0,1'
                 child.send(f"{command}\r\n")
                 child.expect("OK", timeout=5)
-                print(f"{command} success")
+                logger.info(f"{command} success")
             except Exception as e:
-                print(f"{command} Error: {e}")
+                e = str(e).split("buffer (last 100 chars): b'")[1].split("'")[0]
+                logger.error(f"{command} Error. Buffer: {e}")
                 #time.sleep(10)
                 continue
 
@@ -120,9 +135,10 @@ def gsm_send(message):
                 command = "AT+CNACT?"
                 child.send(f"{command}\r\n")
                 child.expect(".*10\..*", timeout=10)
-                print(f"{command} success")
+                logger.info(f"{command} success")
             except Exception as e:
-                print(f"{command} Error: {e}")
+                e = str(e).split("buffer (last 100 chars): b'")[1].split("'")[0]
+                logger.error(f"{command} Error. Buffer: {e}")
                 #time.sleep(15)
                 continue
 
@@ -132,9 +148,10 @@ def gsm_send(message):
                 command = 'AT+CASSLCFG=0,"SSL",0'
                 child.send(f"{command}\r\n")
                 #child.expect("OK", timeout=5)
-                print(f"{command} success")
+                logger.info(f"{command} success")
             except Exception as e:
-                print(f"{command} Error: {e}")
+                e = str(e).split("buffer (last 100 chars): b'")[1].split("'")[0]
+                logger.error(f"{command} Error. Buffer: {e}")
                 #time.sleep(10)
                 continue
 
@@ -143,9 +160,10 @@ def gsm_send(message):
                 command = 'AT+CACLOSE=0'
                 child.send(f"{command}\r\n")
                 #child.expect("OK", timeout=5)
-                print(f"{command} success")
+                logger.info(f"{command} success")
             except Exception as e:
-                print(f"{command} Error: {e}")
+                e = str(e).split("buffer (last 100 chars): b'")[1].split("'")[0]
+                logger.error(f"{command} Error. Buffer: {e}")
                 #time.sleep(10)
                 continue
 
@@ -156,11 +174,12 @@ def gsm_send(message):
                     command = f'AT+CAOPEN=0,0,"TCP","{host}",{int(port)}'
                     child.send(f"{command}\r\n")
                     child.expect([".*CAOPEN: 0,0",".*CADATAIND: 0"], timeout=20)
-                    print(f"{command} success")
+                    logger.info(f"{command} success")
                     socket_connected = True
                     break
                 except Exception as e:
-                    print(f"{command} Error: {e}")
+                    e = str(e).split("buffer (last 100 chars): b'")[1].split("'")[0]
+                    logger.error(f"{command} Error. Buffer: {e}")
                     command = 'AT+CACLOSE=0'
                     child.send(f"{command}\r\n")
                     #time.sleep(2)
@@ -175,16 +194,17 @@ def gsm_send(message):
                     command = f"AT+CASEND=0,{len(message)}"
                     child.send(f"{command}\r\n")
                     child.expect(">.*")
-                    print(f"{command} success")
+                    logger.info(f"{command} success")
                     command = f"{message}"
                     child.send(f"{command}\r\n")
                     #child.expect([".*OK.*","CADATAIND"], timeout=5)
                     child.expect(".*OK.*", timeout=5)
-                    print(f"{command} success")
+                    logger.info(f"{command} success")
                     message_sent = True
                     break
                 except Exception as e:
-                    print(f"CASEND Error: {e}")
+                    e = str(e).split("buffer (last 100 chars): b'")[1].split("'")[0]
+                    logger.error(f"CASEND Error. Buffer: {e}")
                     #time.sleep(10)
 
             if message_sent == False:
@@ -197,7 +217,7 @@ def gsm_send(message):
             break
 
     if success:
-        print(f"Successfully sent message after {attempts} attempts")
+        logger.info(f"Successfully sent message after {attempts} attempts")
         q.task_done()
 
 def worker():
@@ -222,7 +242,6 @@ class MyHttpRequestHandler(BaseHTTPRequestHandler):
         if "/send_message" in final_locator:
             try:
                 data = ast.literal_eval(data)
-                print(type(data))
                 # Rename key to cut down on data use
                 data['m'] = data['message']
                 data['p'] = data['priority']
@@ -240,7 +259,7 @@ class MyHttpRequestHandler(BaseHTTPRequestHandler):
             message = '''{"k":"%s","d":"%s"}''' % (sim_key,data)
             self.send_empty_200()
             q.put(message)
-            print(f"Added '{message}' to message queue")
+            logger.info(f"Added '{message}' to message queue")
 
         else:
             self.send_response(400)
