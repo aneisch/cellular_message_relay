@@ -217,13 +217,18 @@ class MyHttpRequestHandler(BaseHTTPRequestHandler):
         data = self.rfile.read(int(self.headers.get('Content-length'))).decode("utf-8")
         data = unquote(data).strip("data=")
 
-        received_message = {}
-
         final_locator = f'/{self.path.split("/")[-1:][0]}' # eg /status
 
         if "/send_message" in final_locator:
             try:
                 data = ast.literal_eval(data)
+                print(type(data))
+                # Rename key to cut down on data use
+                data['m'] = data['message']
+                data['p'] = data['priority']
+                del data['message']
+                del data['priority']
+
             except:
                 self.send_response(400)
                 self.send_header("Content-Length", "0")
