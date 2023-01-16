@@ -35,7 +35,7 @@ socketserver.TCPServer.allow_reuse_address = True
 
 def gsm_send(message):
     attempts = 0
-    max_attempts = 5
+    max_attempts = 7
     success = False
 
     while attempts < max_attempts:
