@@ -62,7 +62,7 @@ def gsm_send(message):
                 if "http" in power_toggle_webhook:
                     logger.critical(f"Modem unhealthy, power cycling..")
                     requests.post(power_toggle_webhook)
-                    time.sleep(10)
+                    time.sleep(15)
                 continue
 
             # Disable flight mode
