@@ -15,6 +15,7 @@ import time
 import queue
 import threading 
 import logging
+import requests
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s -- %(levelname)s -- %(message)s",
@@ -29,6 +30,7 @@ modem_path = os.environ['MODEM_PATH']
 sim_key = os.environ['SIM_KEY']
 host = os.environ['HOST']
 port = os.environ['PORT']
+power_toggle_webhook = os.environ['POWER_TOGGLE_WEBHOOK']
 
 # Allow faster script restart
 socketserver.TCPServer.allow_reuse_address = True
@@ -47,19 +49,21 @@ def gsm_send(message):
                 child = pexpect.spawn(f"screen -S gsm {modem_path} 115200", env={'TERM': 'vt100'})
             except Exception as e:
                 logger.error(f"spawn error: {e}")   
-                continue        
+                continue      
 
-            # if attempts == 4:     
-            #     #Enable flight mode
-            #     try:
-            #         command = "AT+CFUN=0"
-            #         child.send(f"{command}\r\n")
-            #         child.expect("OK", timeout=5)
-            #         print(f"{command} success")
-            #     except Exception as e:
-            #         print(f"{command} Error: {e}")
-            #         time.sleep(10)
-            #         continue
+            try:
+                command = "AT"
+                child.send(f"{command}\r\n")
+                child.expect("OK", timeout=2)
+                logger.info(f"{command} success, modem healthy")
+            except Exception as e:
+                e = str(e).split("buffer (last 100 chars): b'")[1].split("'")[0]
+                logger.error(f"{command} Error. Buffer: {e}")
+                if "http" in power_toggle_webhook:
+                    logger.critical(f"Modem unhealthy, power cycling..")
+                    requests.post(power_toggle_webhook)
+                    time.sleep(10)
+                continue
 
             # Disable flight mode
             try:

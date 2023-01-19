@@ -21,6 +21,7 @@ services:
         image: ghcr.io/aneisch/cellular_message_relay:latest
         ports:
             - '9999:9999'
+        privileged: true
         environment:
             # Optional MODEM_PATH - defaults to /dev/cellular_modem
             #- MODEM_PATH=/dev/cellular_modem
@@ -28,7 +29,9 @@ services:
             - SIM_KEY=XXXX
             # Set a max queue size to limit usage in case we think we need to send 10,000 messages or something
             - MAX_QUEUE_SIZE=5
-        devices:
+            # Optionally provide a webhook URL to post to to reset modem power when unresponsive
+            - POWER_TOGGLE_WEBHOOK=http://yourwebook
+        volumes:
             - /dev/cellular_modem:/dev/cellular_modem
         restart: always
 ```

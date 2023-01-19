@@ -9,6 +9,7 @@ ENV SIM_KEY XXXXXX
 ENV HOST cloudsocket.hologram.io
 ENV PORT 9999
 ENV MAX_QUEUE_SIZE 10
+ENV POWER_TOGGLE_WEBHOOK na
 
 COPY ./cellular_message_relay.py /usr/bin/cellular_message_relay.py
 COPY ./requirements.txt /tmp/
